@@ -13,7 +13,29 @@ Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=
+Install Directory=file:///usr/local
+
+[Launch]
+Launch Configurations=Launch Configuration 0
+
+[Launch][Launch Configuration 0]
+Configured Launch Modes=execute
+Configured Launchers=nativeAppLauncher
+Name=non-guillotine-cutting
+Type=Native Application
+
+[Launch][Launch Configuration 0][Data]
+Arguments=-f test_1.txt -hc
+Configured from ProjectItem=non-guillotine-cutting,non-guillotine-cutting
+Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
+Dependency Action=Nothing
+EnvironmentGroup=default
+Executable=
+External Terminal=konsole --noclose --workdir %workdir -e %exe
+Project Target=non-guillotine-cutting,non-guillotine-cutting
+Use External Terminal=false
+Working Directory=file:///home/thiago/projects/non-guillotine-cutting/build/
+isExecutable=false
 
 [Project]
 VersionControlSupport=kdevsubversion
