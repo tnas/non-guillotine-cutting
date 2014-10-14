@@ -4,11 +4,16 @@ void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_
   
   register int count_pieces;
   
+  // Ordenação decrescente [value/(width * length)] das peças 
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
   
   for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
-    print_rectangle(pieces_cut[count_pieces]);
+    
+    fit_piece_stock(&stock, pieces_cut[count_pieces]);
+    //print_rectangle(pieces_cut[count_pieces]);
   }
+  
+  print_rectangle(stock);
 }
 
 
@@ -39,6 +44,18 @@ int fit_piece_stock(rectangle* stock, rectangle piece) {
 	for (c_stock_local_length = c_stock_length; (c_stock_local_length < c_stock_length + piece.length) && fit_ok; ++c_stock_local_length) {
 	  
 	  if (stock->content[c_stock_local_width][c_stock_local_length] != stock->type) fit_ok = 0;
+	}
+      }
+      
+      // Alocando peça no palete
+      if (fit_ok) {
+	
+	for (c_stock_local_width = c_stock_width; (c_stock_local_width < c_stock_width + piece.width) && fit_ok; ++c_stock_local_width) {
+	
+	  for (c_stock_local_length = c_stock_length; (c_stock_local_length < c_stock_length + piece.length) && fit_ok; ++c_stock_local_length) {
+	  
+	    stock->content[c_stock_local_width][c_stock_local_length] = piece.type;
+	  }
 	}
       }
     }
