@@ -4,6 +4,8 @@ void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_
   
   register int count_pieces;
   
+  rectangle_selection_sort(pieces_cut, num_pieces_cut);
+  
   for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
     print_rectangle(pieces_cut[count_pieces]);
   }
@@ -44,3 +46,7 @@ int fit_piece_stock(rectangle* stock, rectangle piece) {
   
   return fit_ok;
 }
+
+
+
+

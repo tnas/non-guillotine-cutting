@@ -5,9 +5,12 @@ typedef struct {
   float value;
   unsigned int length;
   unsigned int width;
+  float calculated_value;
   int** content;
 } rectangle;
 
+
+void rectangle_selection_sort(rectangle* array, const int length);
 
 void build_rectangle(rectangle* rec);
 
