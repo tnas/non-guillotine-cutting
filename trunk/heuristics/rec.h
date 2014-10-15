@@ -17,3 +17,5 @@ void build_rectangle(rectangle* rec);
 void destroy_rectangle(rectangle* rec);
 
 void print_rectangle(rectangle rec);
+
+void print_cut_rectangle(rectangle rec);

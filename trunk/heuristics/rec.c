@@ -68,9 +68,23 @@ void print_rectangle(rectangle rec) {
   for (lin = 0; lin < rec.width; ++lin) {
     
     for (col = 0; col < rec.length; ++col) {
-      printf("%u ", rec.content[lin][col]);
+      printf("%02u ", rec.content[lin][col]);
     }
     printf("\n");
   }
+}
+
+
+void print_cut_rectangle(rectangle rec) {
+
+  register unsigned int lin, col;
   
+  for (lin = 0; lin < rec.width; ++lin) {
+    
+    for (col = 0; col < rec.length; ++col) {
+      if (rec.content[lin][col]) printf("%02u ", rec.content[lin][col]);
+      else printf("   ");
+    }
+    printf("\n");
+  }
 }

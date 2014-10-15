@@ -4,6 +4,10 @@
 int main(int argc, char **argv) {
 
     line_argument argument;
+    struct timeval start_time, end_time;
+    struct rusage ru;
+    double time_initial, time_final;
+    
     load_line_argument(argc, argv, &argument);
     
     char* path_file = malloc(strlen(DIR_TEST) + strlen(argument.file_name));
@@ -24,7 +28,6 @@ int main(int argc, char **argv) {
     fscanf(file_descriptor, "%u %u %u", &stock.length, &stock.width, &num_pieces_cut);
     stock.type = 0;
     build_rectangle(&stock);
-    print_rectangle(stock);
     
     rectangle pieces_cut[num_pieces_cut];
     int count_piece = 0;
@@ -38,7 +41,17 @@ int main(int argc, char **argv) {
     fclose(file_descriptor);
     
     if (!strcmp(argument.opt_heuristic, ARG_HC)) {
+      
+      getrusage(RUSAGE_SELF, &ru);
+      start_time = ru.ru_utime;
       run_constructive_heuristic(pieces_cut, stock, num_pieces_cut);
+      int i = 0; while (i < 10000000) ++i;
+      getrusage(RUSAGE_SELF, &ru);
+      end_time = ru.ru_utime;
+      
+      time_initial = start_time.tv_sec * 1000000 + (start_time.tv_usec);
+      time_final = end_time.tv_sec * 1000000 + (end_time.tv_usec);
+      printf("Tempo de execução: %.2f milisegundos\n", time_final - time_initial);
     }
     
     for (count_piece = 0; count_piece < num_pieces_cut; 
