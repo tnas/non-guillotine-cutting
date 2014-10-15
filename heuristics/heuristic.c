@@ -3,17 +3,20 @@
 void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_pieces_cut) {
   
   register int count_pieces;
+  int objective_function = 0;
   
   // Ordenação decrescente [value/(width * length)] das peças 
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
   
   for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
-    
-    fit_piece_stock(&stock, pieces_cut[count_pieces]);
-    //print_rectangle(pieces_cut[count_pieces]);
+    printf("Fitting piece: %d\n", pieces_cut[count_pieces].type);
+    if (fit_piece_stock(&stock, pieces_cut[count_pieces]))
+      objective_function += pieces_cut[count_pieces].value;
   }
   
-  print_rectangle(stock);
+  printf("Solução ótima gerada pela heurística construtiva:\n");
+  print_cut_rectangle(stock);
+  printf("Valor maximizado: %d\n", objective_function);
 }
 
 
@@ -57,6 +60,8 @@ int fit_piece_stock(rectangle* stock, rectangle piece) {
 	    stock->content[c_stock_local_width][c_stock_local_length] = piece.type;
 	  }
 	}
+	
+	return fit_ok;
       }
     }
   }

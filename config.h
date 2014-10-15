@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 
 extern const char* DIR_TEST;
 extern const char* ARG_HC;
