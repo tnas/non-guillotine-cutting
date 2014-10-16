@@ -1,4 +1,3 @@
-#include <memory.h>
 #include "rec.h"
 
 
@@ -27,6 +26,35 @@ void rectangle_selection_sort(rectangle* array, const int length) {
     }
   }  
 }
+
+
+/*void init_list_cut_rectangle(cut_rectangle** list_cut) {
+  build_rectangle(rec);
+  rec->list_cut_rectangle = malloc(rec->width * rec->length * sizeof(cut_rectangle));
+}*/
+
+void clean_active_cut_rectangles(cut_rectangle* list_cut) {
+
+  char s[] = "Era uma vez";
+  while (*s) {
+    printf("%s\n", s);
+    //s++;
+  }
+  
+  register int count = 0;
+  while (list_cut) {
+    printf("Process position %d\n", count++);
+    list_cut->active = 0;
+    list_cut->area    = 
+    list_cut->col_fin =
+    list_cut->col_ini = 
+    list_cut->lin_fin =
+    list_cut->lin_ini = -1;
+    list_cut++;
+  }
+    
+}
+
 
 void build_rectangle(rectangle* rec) {
   

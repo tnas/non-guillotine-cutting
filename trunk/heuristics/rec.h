@@ -1,4 +1,15 @@
+#include <memory.h>
 #include <stdio.h>
+
+typedef struct {
+  int lin_ini;
+  int col_ini;
+  int lin_fin;
+  int col_fin;
+  int area;
+  unsigned int active;
+} cut_rectangle;
+
 
 typedef struct {
   unsigned int type;
@@ -12,7 +23,7 @@ typedef struct {
 
 void rectangle_selection_sort(rectangle* array, const int length);
 
-void build_rectangle(rectangle* rec);
+void clean_active_cut_rectangles(cut_rectangle* list_cut);
 
 void destroy_rectangle(rectangle* rec);
 
