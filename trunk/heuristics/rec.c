@@ -33,26 +33,17 @@ void rectangle_selection_sort(rectangle* array, const int length) {
   rec->list_cut_rectangle = malloc(rec->width * rec->length * sizeof(cut_rectangle));
 }*/
 
-void clean_active_cut_rectangles(cut_rectangle* list_cut) {
+void clean_active_cut_rectangles(cut_rectangle* list_cut, int num_elements) {
 
-  char s[] = "Era uma vez";
-  while (*s) {
-    printf("%s\n", s);
-    //s++;
+  register int count;
+  for (count = 0; count < num_elements; ++count) {
+    list_cut[count].active = 0;
+    list_cut[count].area    = 
+    list_cut[count].col_fin =
+    list_cut[count].col_ini = 
+    list_cut[count].lin_fin =
+    list_cut[count].lin_ini = -1;
   }
-  
-  register int count = 0;
-  while (list_cut) {
-    printf("Process position %d\n", count++);
-    list_cut->active = 0;
-    list_cut->area    = 
-    list_cut->col_fin =
-    list_cut->col_ini = 
-    list_cut->lin_fin =
-    list_cut->lin_ini = -1;
-    list_cut++;
-  }
-    
 }
 
 

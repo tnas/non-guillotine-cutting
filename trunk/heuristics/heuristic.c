@@ -25,9 +25,10 @@ void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_
   register int count_pieces;
   int objective_function = 0;
   cut_rectangle* set_cut_rectangles;
+  unsigned int stock_area = stock.width * stock.length;
   
   // Inicializando set_cut_rectangles
-   set_cut_rectangles = malloc(stock.width * stock.length * sizeof(cut_rectangle));
+   set_cut_rectangles = malloc(stock_area * sizeof(cut_rectangle));
 
   // Ordenação decrescente [value/(width * length)] das peças 
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
@@ -38,9 +39,9 @@ void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_
     
     if (cut_piece_stock(&stock, pieces_cut[count_pieces]))
       objective_function += pieces_cut[count_pieces].value;
-    
+    print_rectangle(stock);
     build_set_cut_rectangles(stock, set_cut_rectangles);
-    print_set_cut_rectangles(&set_cut_rectangles);
+    print_set_cut_rectangles(set_cut_rectangles, stock_area);
     break;
   }
   
@@ -103,21 +104,19 @@ int cut_piece_stock(rectangle* stock, rectangle piece) {
 }
 
 
-void build_set_cut_rectangles(rectangle stock, cut_rectangle** set_cut_rec) {
+void build_set_cut_rectangles(rectangle stock, cut_rectangle* set_cut_rec) {
   
   register int c_stock_width, c_stock_length, c_stock_local_width, c_stock_local_length, c_fix_stock_local_length;
-  int c_cut_rec;
+  int c_cut_rec = 0;
   cut_rectangle cut_rec_candidate;
+  int stock_area = stock.width * stock.length;
   
-  clean_active_cut_rectangles(set_cut_rec);
+  clean_active_cut_rectangles(set_cut_rec, stock_area);
     
   for (c_stock_width = 0; c_stock_width < stock.width; ++c_stock_width) {
   
     for (c_stock_length = 0; c_stock_length < stock.length; ++c_stock_length) {
       
-      if (stock.content[c_stock_width][c_stock_length] == stock.type) { // início de um cut_rectangle
-	
-	//if (is_node_candidate(c_stock_width, c_stock_length, stock, set_cut_rec)) {
 	if (is_node_empty(c_stock_width, c_stock_length, stock)) {
 	  
 	  // Inicializando cut_rectangle candidate
@@ -148,44 +147,46 @@ void build_set_cut_rectangles(rectangle stock, cut_rectangle** set_cut_rec) {
 	    
 	  // Verificando se o cut_rec_candidate não está completamente contido em algum 
 	  // cut_rectangle previamente encontrado
-	  if (!is_rectangle_area_in_list_cut_retangles(set_cut_rec, cut_rec_candidate)) {	    
-	    (*set_cut_rec)[c_cut_rec].active = 1;
-	    (*set_cut_rec)[c_cut_rec].lin_ini = cut_rec_candidate.lin_ini;
-	    (*set_cut_rec)[c_cut_rec].lin_fin = cut_rec_candidate.lin_fin;
-	    (*set_cut_rec)[c_cut_rec].col_ini = cut_rec_candidate.col_ini;
-	    (*set_cut_rec)[c_cut_rec].col_fin = cut_rec_candidate.col_fin;
+	  if (!is_rectangle_area_in_list_cut_retangles(set_cut_rec, stock_area, cut_rec_candidate)) {	    
+	    set_cut_rec[c_cut_rec].active = 1;
+	    set_cut_rec[c_cut_rec].lin_ini = cut_rec_candidate.lin_ini;
+	    set_cut_rec[c_cut_rec].lin_fin = cut_rec_candidate.lin_fin;
+	    set_cut_rec[c_cut_rec].col_ini = cut_rec_candidate.col_ini;
+	    set_cut_rec[c_cut_rec].col_fin = cut_rec_candidate.col_fin;
+	    set_cut_rec[c_cut_rec].area    = cut_rec_candidate.area; 
 	    ++c_cut_rec;
 	  }
 	}
+    }
+  }
+}
+
+
+void print_set_cut_rectangles(const cut_rectangle* set_cut_rec, int num_elements) {
+  
+  register unsigned int count;
+  
+  for (count = 0; count < num_elements; ++count) {
+    
+    if (set_cut_rec[count].active) {
+      printf("[lin_ini: %d, col_ini: %d, lin_fin: %d, col_fin: %d, area: %d]\n", 
+	set_cut_rec[count].lin_ini, set_cut_rec[count].col_ini,
+	set_cut_rec[count].lin_fin, set_cut_rec[count].col_fin, set_cut_rec[count].area);
+    }
+  }
+}
+
+
+int is_rectangle_area_in_list_cut_retangles(const cut_rectangle* set_cut_rec, int num_elements, const cut_rectangle cut_rec) {
+  
+  register unsigned int count;
+  
+  for (count = 0; count < num_elements; ++count) {
+    
+    if (set_cut_rec[count].active) {
+      if (cut_rec.lin_ini >= set_cut_rec[count].lin_ini && cut_rec.lin_fin <= set_cut_rec[count].lin_fin &&
+	  cut_rec.col_ini >= set_cut_rec[count].col_ini && cut_rec.col_fin <= set_cut_rec[count].col_fin) return 1;
       }
-    }
-  }
-}
-
-
-void print_set_cut_rectangles(const cut_rectangle** set_cut_rec) {
-  
-  while (*set_cut_rec != NULL) {
-    
-    if ((*set_cut_rec)->active) {
-      printf("[lin_ini: %d, col_ini: %d, lin_fin: %d, col_fin: %d]\n", 
-	(*set_cut_rec)->lin_ini, (*set_cut_rec)->col_ini,
-	(*set_cut_rec)->lin_fin, (*set_cut_rec)->col_fin);
-    }
-    
-    ++set_cut_rec;
-  }
-}
-
-
-int is_rectangle_area_in_list_cut_retangles(const cut_rectangle** set_cut_rec, const cut_rectangle cut_rec) {
-  
-  if (set_cut_rec == NULL) return 0;
-  
-  while (*set_cut_rec != NULL && (*set_cut_rec)->active) {
-    if (cut_rec.lin_ini >= (*set_cut_rec)->lin_ini && cut_rec.lin_fin <= (*set_cut_rec)->lin_fin &&
-	cut_rec.col_ini >= (*set_cut_rec)->col_ini && cut_rec.col_fin <= (*set_cut_rec)->col_fin) return 1;
-    ++set_cut_rec;
   }
   
   return 0;

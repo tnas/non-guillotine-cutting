@@ -23,7 +23,7 @@ typedef struct {
 
 void rectangle_selection_sort(rectangle* array, const int length);
 
-void clean_active_cut_rectangles(cut_rectangle* list_cut);
+void clean_active_cut_rectangles(cut_rectangle* list_cut, int num_elements);
 
 void destroy_rectangle(rectangle* rec);
 
