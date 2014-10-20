@@ -28,11 +28,6 @@ void rectangle_selection_sort(rectangle* array, const int length) {
 }
 
 
-/*void init_list_cut_rectangle(cut_rectangle** list_cut) {
-  build_rectangle(rec);
-  rec->list_cut_rectangle = malloc(rec->width * rec->length * sizeof(cut_rectangle));
-}*/
-
 void clean_active_cut_rectangles(cut_rectangle* list_cut, int num_elements) {
 
   register int count;
