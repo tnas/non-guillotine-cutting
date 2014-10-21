@@ -5,6 +5,8 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 
+#include "heuristics/heuristic.h"
+
 extern const char* DIR_TEST;
 extern const char* ARG_HC;
 extern const char* ARG_HM;
