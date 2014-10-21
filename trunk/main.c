@@ -44,10 +44,14 @@ int main(int argc, char **argv) {
       
       getrusage(RUSAGE_SELF, &ru);
       start_time = ru.ru_utime;
-      run_constructive_heuristic(pieces_cut, stock, num_pieces_cut);
+      objective_function = run_constructive_heuristic(pieces_cut, &stock, num_pieces_cut);
       int i = 0; while (i < 10000000) ++i;
       getrusage(RUSAGE_SELF, &ru);
       end_time = ru.ru_utime;
+      
+      printf("Solução ótima gerada pela heurística construtiva:\n");
+      print_cut_rectangle(stock);
+      printf("Valor maximizado: %d\n", objective_function);
       
       time_initial = start_time.tv_sec * 1000000 + (start_time.tv_usec);
       time_final = end_time.tv_sec * 1000000 + (end_time.tv_usec);
@@ -74,10 +78,14 @@ int main(int argc, char **argv) {
       
       getrusage(RUSAGE_SELF, &ru);
       start_time = ru.ru_utime;
-      run_grasp_metaheuristic(pieces_cut, stock, num_pieces_cut);
+      objective_function = run_grasp_metaheuristic(pieces_cut, &stock, num_pieces_cut);
       int i = 0; while (i < 10000000) ++i;
       getrusage(RUSAGE_SELF, &ru);
       end_time = ru.ru_utime;
+      
+      printf("Solução ótima gerada pela meta-heurística GRASP:\n");
+      print_cut_rectangle(stock);
+      printf("Valor maximizado: %d\n", objective_function);
       
       time_initial = start_time.tv_sec * 1000000 + (start_time.tv_usec);
       time_final = end_time.tv_sec * 1000000 + (end_time.tv_usec);

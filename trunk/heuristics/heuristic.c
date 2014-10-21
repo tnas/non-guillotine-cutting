@@ -9,7 +9,7 @@ const float GRASP_LRC_PARAM = 0.25;
  * Heurística Construtiva
  * ***************************
  */
-void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_pieces_cut) {
+unsigned int run_constructive_heuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
   
   register int count_pieces;
   int objective_function = 0;
@@ -18,13 +18,11 @@ void run_constructive_heuristic(rectangle *pieces_cut, rectangle stock, int num_
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
   
   for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
-    if (cut_piece_stock(&stock, pieces_cut[count_pieces]))
+    if (cut_piece_stock(stock, pieces_cut[count_pieces]))
       objective_function += pieces_cut[count_pieces].value;
   }
   
-  printf("Solução ótima gerada pela heurística construtiva:\n");
-  print_cut_rectangle(stock);
-  printf("Valor maximizado: %d\n", objective_function);
+  return objective_function;
 }
 
 
@@ -107,34 +105,32 @@ int get_piece_to_cut(rectangle *pieces_cut, int num_pieces_cut, POLICY_GET_PIECE
  * ***************************
  */
 
-void run_grasp_metaheuristic(rectangle *pieces_cut, rectangle stock, int num_pieces_cut) {
+unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
   
   unsigned int lcr_size, objective_function, local_solution, candidate_index;
   register unsigned int c_grasp_iter;
   
   srand(time(NULL));
   
-  //candidate_index = (rand() % num_pieces_cut) + 6;
-  //printf("Random number between (%d, %d): %d\n", 6, num_pieces_cut, candidate_index);
-  
-  
   lcr_size = num_pieces_cut * GRASP_LRC_PARAM;
   rectangle candidates_list[lcr_size];
-  objective_function = local_solution = 0;
-  
+  objective_function = local_solution = candidate_index = 0;
   
   // Ordenação decrescente [value/(width * length)] das peças 
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
   
-  for (c_grasp_iter = 0; c_grasp_iter < GRASP_LOOP; ++c_grasp_iter) {
+  //for (c_grasp_iter = 0; c_grasp_iter < GRASP_LOOP; ++c_grasp_iter) {
     
-  }
-  
+    build_greedy_randomized_solution(candidates_list, lcr_size, pieces_cut, &candidate_index, num_pieces_cut, stock);
+    
+  //}
+    
+    return objective_function;
 }
 
 
 void build_greedy_randomized_solution(rectangle* candidates_list, const unsigned int size_candidates_list,
-  rectangle *pieces_cut, int* next_index_piece, const int num_pieces_cut, rectangle* stock) {
+  rectangle *pieces_cut, unsigned int *next_index_piece, const int num_pieces_cut, rectangle* stock) {
   
   register unsigned int c_iter_cand;
   
