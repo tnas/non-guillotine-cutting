@@ -120,6 +120,31 @@ void print_set_cut_rectangles(const cut_rectangle* set_cut_rec, int num_elements
 }
 
 
+void clean_rectangle(rectangle* rec) {
+  
+  register unsigned int lin, col;
+  
+  for (lin = 0; lin < rec->width; ++lin) {
+    for (col = 0; col < rec->length; ++col) {
+      rec->content[lin][col] = rec->type;
+    }
+  }
+  
+  rec->is_cutted = rec->is_evaluated = 0;
+}
+
+
+void reset_status_rectangles(rectangle* rec, unsigned int size) {
+
+  register unsigned int count;
+  
+  for (count = 0; count < size; ++count) 
+    rec[count].is_cutted = rec[count].is_evaluated = 0;
+  
+}
+
+
+
 int cut_piece_stock(rectangle* stock, rectangle piece) {
   
   register int c_stock_width, c_stock_length, c_stock_local_width, c_stock_local_length;

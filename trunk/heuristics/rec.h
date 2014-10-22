@@ -31,6 +31,10 @@ void build_rectangle(rectangle* rec);
 
 void destroy_rectangle(rectangle* rec);
 
+void clean_rectangle(rectangle* rec);
+
+void reset_status_rectangles(rectangle *rec, unsigned int size);
+
 void print_rectangle(rectangle rec);
 
 void print_cut_rectangle(rectangle rec);
