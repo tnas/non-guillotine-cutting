@@ -61,7 +61,7 @@ int main(int argc, char **argv) {
       
       getrusage(RUSAGE_SELF, &ru);
       start_time = ru.ru_utime;
-      objective_function = run_improvement_heuristic(pieces_cut, &stock, num_pieces_cut, SEQUENTIAL);
+      objective_function = run_improvement_heuristic(pieces_cut, &stock, num_pieces_cut);
       int i = 0; while (i < 10000000) ++i;
       getrusage(RUSAGE_SELF, &ru);
       end_time = ru.ru_utime;
