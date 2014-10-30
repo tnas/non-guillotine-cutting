@@ -30,7 +30,8 @@ void load_line_argument(int argc, char **argv, line_argument* argument) {
 void print_help() {
     printf("Informe os seguintes parâmetros para a execução do programa:\n");
     printf("-f <nome do arquivo de entrada situado no diretório ./in>\n");
-    printf("-hc <para execução da heurística construtiva>\n");
+    printf("-ff <para execução da heurística construtiva first-fit>\n");
+    printf("-bf <para execução da heurística construtiva best-fit>\n");
     printf("-hm <para execução da heurística de melhoramento>\n");
-    printf("-mh <para execução da meta-heurística\n");
+    printf("-mh <para execução da meta-heurística GRASP\n");
 }
