@@ -8,7 +8,8 @@
 #include "heuristics/heuristic.h"
 
 extern const char* DIR_TEST;
-extern const char* ARG_HC;
+extern const char* ARG_FF;
+extern const char* ARG_BF;
 extern const char* ARG_HM;
 extern const char* ARG_MH;
 

@@ -25,7 +25,7 @@ Name=non-guillotine-cutting
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=-f test_1.txt -hm
+Arguments=-f test_1.txt -bf
 Configured from ProjectItem=non-guillotine-cutting,non-guillotine-cutting
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing

@@ -1,7 +1,8 @@
 #include "config.h"
 
 const char* DIR_TEST = "../in/";
-const char* ARG_HC = "-hc";
+const char* ARG_FF = "-ff";
+const char* ARG_BF = "-bf";
 const char* ARG_HM = "-hm";
 const char* ARG_MH = "-mh";
 
