@@ -5,17 +5,14 @@ const unsigned int GRASP_LOOP = 1000;
 const float GRASP_LRC_PARAM = 0.25;
 
 
-/* ***************************
- * Heurística Construtiva
- * ***************************
+/* *********************************
+ * Heurística Construtiva First-Fit
+ * *********************************
  */
-unsigned int run_constructive_heuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
+unsigned int run_first_fit_constructive_heuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
   
   register int count_pieces;
   int objective_function = 0;
-  
-  // Ordenação decrescente [value/(width * length)] das peças 
-  rectangle_selection_sort(pieces_cut, num_pieces_cut);
   
   for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
     if (cut_piece_stock(stock, pieces_cut[count_pieces]))
@@ -28,11 +25,11 @@ unsigned int run_constructive_heuristic(rectangle *pieces_cut, rectangle *stock,
 
 
 
-/* ***************************
- * Heurística de Melhoramento
- * ***************************
+/* ********************************
+ * Heurística Construtiva Best-Fit
+ * ********************************
  */
-unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle* stock, int num_pieces_cut) {
+unsigned int run_best_fit_constructive_heuristic(rectangle *pieces_cut, rectangle* stock, int num_pieces_cut) {
   
   int index_piece = 0;
   int objective_function = 0;
@@ -42,9 +39,6 @@ unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle* stock, 
   // Inicializando set_cut_rectangles
    set_cut_rectangles = malloc(stock_area * sizeof(cut_rectangle));
 
-  // Ordenação decrescente [value/(width * length)] das peças 
-  rectangle_selection_sort(pieces_cut, num_pieces_cut);
-  
   for (index_piece = 0; index_piece < num_pieces_cut; ++index_piece) {
     
     pieces_cut[index_piece].is_evaluated = 1;
@@ -62,6 +56,122 @@ unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle* stock, 
 }
 
 
+
+/* *********************************
+ * Heurística de Melhoramento 
+ * *********************************
+ */
+
+
+unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
+  
+  unsigned int track_pos, solution;
+  register unsigned int count_pieces;
+  
+  solution = track_pos = 0;
+  int track_solution[num_pieces_cut];
+
+  // Ordenação decrescente [value/(width * length)] das peças 
+  rectangle_selection_sort(pieces_cut, num_pieces_cut);
+  
+  // Obtendo solução inicial
+  for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
+    if (cut_piece_stock(stock, pieces_cut[count_pieces])) {
+      solution += pieces_cut[count_pieces].value;
+      track_solution[track_pos++] = count_pieces;
+    }
+  }
+  
+  for (; track_pos < num_pieces_cut; track_solution[track_pos++] = -1);
+   
+  // Executando melhoramento via análise da vizinhança
+  solution = run_adaptive_search(*stock, pieces_cut, num_pieces_cut, track_solution, solution);
+ 
+  clean_rectangle(stock);
+  reset_status_rectangles(pieces_cut, num_pieces_cut);
+  
+  solution = 0;
+  for (count_pieces = 0; count_pieces < num_pieces_cut; ++count_pieces) {
+    if (track_solution[count_pieces] != -1 && cut_piece_stock(stock, pieces_cut[track_solution[count_pieces]])) {
+      solution += pieces_cut[track_solution[count_pieces]].value;
+    }
+  }
+  
+  return solution;
+  
+}
+
+/*
+unsigned int run_new_adaptive_search(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *track_solution, unsigned int local_function) {
+  
+  register unsigned int counter, ext_counter, num_solution, index_item_solution;
+  unsigned int size_track_solution, extended_size_track_solution, pivot_index, neighbor_index, neighbor_function;
+  int **neighborhood;
+  int mem_solution;
+  
+  // Dimensão da solução
+  size_track_solution = 0;
+  for (counter = 0; counter < num_pieces_cut; ++counter)
+    if (track_solution[counter] != -1) size_track_solution++;
+  
+  // Parte estendida da solução - 30/10/2014
+  extended_size_track_solution = num_pieces_cut - size_track_solution;
+  int extended_track_solution[extended_size_track_solution];
+  
+  // Alocando vizinhança da solução  
+  neighborhood = malloc((size_track_solution - 1) * sizeof(int*));
+  for (counter = 0; counter < size_track_solution - 1; ++counter)
+    neighborhood[counter] = malloc(size_track_solution * sizeof(int));
+  
+  // Selecionando pivô para gerar vizinhança de solução
+  pivot_index = rand() % size_track_solution;
+  
+  // Gerando vizinhança e verificando melhor solução local
+  for (num_solution = 0; num_solution < size_track_solution - 1; ++num_solution) {
+    
+    for (index_item_solution = 0; index_item_solution < size_track_solution; ++index_item_solution) {
+	neighborhood[num_solution][index_item_solution] = track_solution[index_item_solution];
+    }
+    
+    // Executando permuta com o pivot_index
+    neighbor_index = num_solution < pivot_index ? num_solution : num_solution + 1;
+    mem_solution = neighborhood[num_solution][neighbor_index];
+    neighborhood[num_solution][neighbor_index] = track_solution[pivot_index];
+    neighborhood[num_solution][pivot_index] = mem_solution;
+    
+    neighbor_function = evaluate_solution(stock, pieces_cut, num_pieces_cut, neighborhood[num_solution], size_track_solution);
+    
+    // Verificando se alguma peça pode ser alocada com a nova solução encontrada - 30/10/2014
+    ext_counter = 0;
+    for (counter = 0; counter < num_pieces_cut; ++counter) {
+      if (!pieces_cut[counter].is_cutted && cut_piece_stock(&stock, pieces_cut[counter])) {
+	neighbor_function += pieces_cut[counter].value;
+	extended_track_solution[ext_counter++] = pieces_cut[counter].type;
+      }
+    }
+    
+    if (neighbor_function > local_function) {
+      
+      local_function = neighbor_function;
+      
+      for (counter = 0; counter < size_track_solution; ++counter)
+	track_solution[counter] = neighborhood[num_solution][counter];
+      
+      for (; counter < size_track_solution + ext_counter; ++counter) 
+	track_solution[counter] = extended_track_solution[counter];
+      
+      for (; counter < num_pieces_cut; ++counter) 
+	track_solution[counter] = - 1;
+    }
+  }
+  
+  // Destruindo vizinhança da solução
+  for (counter = 0; counter < size_track_solution - 1; ++counter) free(neighborhood[counter]);
+  free(neighborhood);
+  
+  return local_function;
+}
+*/
 
 
 /* ***************************
@@ -185,7 +295,7 @@ unsigned int run_adaptive_search(rectangle stock, rectangle *pieces_cut, int num
   // Dimensão da solução
   size_track_solution = 0;
   for (counter = 0; counter < num_pieces_cut; ++counter)
-    if (track_solution[counter] != -1) size_track_solution++;
+    if (track_solution[counter] != -1) size_track_solution++; 
   
   // Alocando vizinhança da solução  
   neighborhood = malloc((size_track_solution - 1) * sizeof(int*));
@@ -259,6 +369,8 @@ unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_p
       objective_function += pieces_cut[solution[c_index_sol]].value;
     }
   }
+  
+  free(set_cut_rectangles);
   
   return objective_function;
 }

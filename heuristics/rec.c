@@ -150,7 +150,7 @@ int cut_piece_stock(rectangle* stock, rectangle piece) {
   register int c_stock_width, c_stock_length, c_stock_local_width, c_stock_local_length;
   int fit_ok = 0;
   
-  if (piece.length > stock->length || piece.width > stock->width) 
+  if (piece.length > stock->length || piece.width > stock->width || piece.is_cutted) 
     return 0;
   
   for (c_stock_width = 0; c_stock_width <= stock->width - piece.width; ++c_stock_width) {
