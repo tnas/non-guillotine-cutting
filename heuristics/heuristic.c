@@ -2,7 +2,7 @@
 
 
 const unsigned int GRASP_LOOP = 1000;
-const float GRASP_LRC_PARAM = 0.25;
+const float GRASP_LRC_PARAM = 0.50;
 
 
 /* *********************************
