@@ -3,17 +3,17 @@ BuildItems=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x
 
 [CMake]
 Build Directory Count=1
-CMakeDir=/usr/share/cmake-2.8/Modules
+CMakeDir=file:///usr/share/cmake-2.8/Modules
 Current Build Directory Index=0
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
-Build Directory Path=file:///home/thiago/projects/non-guillotine-cutting/build
+Build Directory Path=file:///home/thiago/git-projects/non-guillotine-cutting.git/build
 Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=
-Install Directory=file:///usr/local
+Install Directory=
 
 [Launch]
 Launch Configurations=Launch Configuration 0
@@ -25,7 +25,7 @@ Name=non-guillotine-cutting
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=-f test_1.txt -mh
+Arguments=-f hadjiconstantinou_1.txt -mh
 Configured from ProjectItem=non-guillotine-cutting,non-guillotine-cutting
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x00)
 Dependency Action=Nothing
@@ -34,7 +34,7 @@ Executable=
 External Terminal=konsole --noclose --workdir %workdir -e %exe
 Project Target=non-guillotine-cutting,non-guillotine-cutting
 Use External Terminal=false
-Working Directory=file:///home/thiago/projects/non-guillotine-cutting/build/
+Working Directory=file:///home/thiago/git-projects/non-guillotine-cutting.git
 isExecutable=false
 
 [Project]

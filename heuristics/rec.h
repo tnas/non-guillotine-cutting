@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <stdio.h>
+#include <omp.h>
 
 typedef struct {
   int lin_ini;

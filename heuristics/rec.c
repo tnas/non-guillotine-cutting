@@ -27,10 +27,11 @@ void rectangle_selection_sort(rectangle* array, const int length) {
   }  
 }
 
-
 void clean_active_cut_rectangles(cut_rectangle* list_cut, int num_elements) {
 
   register int count;
+  
+  #pragma omp parallel for private(count)
   for (count = 0; count < num_elements; ++count) {
     list_cut[count].active = 0;
     list_cut[count].area    = 
@@ -122,15 +123,20 @@ void print_set_cut_rectangles(const cut_rectangle* set_cut_rec, int num_elements
 
 void clean_rectangle(rectangle* rec) {
   
-  register unsigned int lin, col;
-  
-  for (lin = 0; lin < rec->width; ++lin) {
-    for (col = 0; col < rec->length; ++col) {
-      rec->content[lin][col] = rec->type;
+  #pragma omp parallel
+  {
+    register unsigned int lin, col;
+    
+    #pragma omp for
+    for (lin = 0; lin < rec->width; ++lin) {
+      for (col = 0; col < rec->length; ++col) {
+	rec->content[lin][col] = rec->type;
+      }
     }
-  }
   
-  rec->is_cutted = rec->is_evaluated = 0;
+    #pragma omp single
+    rec->is_cutted = rec->is_evaluated = 0;
+  }
 }
 
 
@@ -138,6 +144,7 @@ void reset_status_rectangles(rectangle* rec, unsigned int size) {
 
   register unsigned int count;
   
+  #pragma omp parallel for private(count)
   for (count = 0; count < size; ++count) 
     rec[count].is_cutted = rec[count].is_evaluated = 0;
   
