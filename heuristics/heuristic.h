@@ -13,7 +13,7 @@ unsigned int run_best_fit_constructive_heuristic(rectangle *pieces_cut, rectangl
 
 unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut);
 
-unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut);
+unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, unsigned int num_pieces_cut);
 
 unsigned int build_greedy_randomized_solution(rectangle *pieces_cut, int num_pieces_cut, rectangle stock, int lcr_size, int *track_solution);
 
@@ -21,6 +21,6 @@ int get_random_piece_to_cut(const rectangle *pieces_cut, int lenght_array_pieces
 
 unsigned int run_adaptive_search(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *track_solution, unsigned int local_function);
 
-unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *solution, unsigned int size_solution);
+unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *solution, unsigned int *size_solution, unsigned int tryaddpiece);
 
 //unsigned int run_new_adaptive_search(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *track_solution, unsigned int local_function);

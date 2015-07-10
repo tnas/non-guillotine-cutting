@@ -2,7 +2,7 @@
 
 
 const unsigned int GRASP_LOOP = 1000;
-const float GRASP_LRC_PARAM = 0.50;
+const float GRASP_LRC_PARAM = 0.5;
 
 
 /* *********************************
@@ -107,7 +107,7 @@ unsigned int run_improvement_heuristic(rectangle *pieces_cut, rectangle *stock, 
  * ***************************
  */
 
-unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, int num_pieces_cut) {
+unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, unsigned int num_pieces_cut) {
   
   unsigned int lcr_size, objective_function, local_solution;
   register unsigned int c_grasp_iter, c_item_solution;
@@ -116,7 +116,6 @@ unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, in
   
   // Ordenação decrescente [value/(width * length)] das peças 
   rectangle_selection_sort(pieces_cut, num_pieces_cut);
-  
   lcr_size = num_pieces_cut * GRASP_LRC_PARAM;
   objective_function = local_solution = 0;
   int track_solution[num_pieces_cut], solution[num_pieces_cut];
@@ -124,7 +123,6 @@ unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, in
   for (c_grasp_iter = 0; c_grasp_iter < GRASP_LOOP; ++c_grasp_iter) {
     
     local_solution = build_greedy_randomized_solution(pieces_cut, num_pieces_cut, *stock, lcr_size, track_solution);
-    
     clean_rectangle(stock);
     reset_status_rectangles(pieces_cut, num_pieces_cut);
     
@@ -139,7 +137,7 @@ unsigned int run_grasp_metaheuristic(rectangle *pieces_cut, rectangle *stock, in
     }
   }
   
-  evaluate_solution(*stock, pieces_cut, num_pieces_cut, solution, num_pieces_cut);
+  evaluate_solution(*stock, pieces_cut, num_pieces_cut, solution, &num_pieces_cut, 0);
   
   return objective_function;
 }
@@ -157,7 +155,7 @@ unsigned int build_greedy_randomized_solution(rectangle *pieces_cut, int num_pie
   // Inicializando set_cut_rectangles
    set_cut_rectangles = malloc(stock.length * stock.width * sizeof(cut_rectangle));
   
-  // Reset no track_solution e pieces_cut
+  // Reset no track_solution and pieces_cut
   for (c_iter_cand = 0; c_iter_cand < num_pieces_cut; track_solution[c_iter_cand++] = -1) ;
   reset_status_rectangles(pieces_cut, num_pieces_cut);
   clean_rectangle(&stock);
@@ -216,29 +214,33 @@ int get_random_piece_to_cut(const rectangle *pieces_cut, int lenght_array_pieces
 unsigned int run_adaptive_search(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *track_solution, unsigned int local_function) {
   
   register unsigned int counter, num_solution, index_item_solution;
-  unsigned int size_track_solution, pivot_index, neighbor_index, neighbor_function;
+  unsigned int size_original_track_solution, size_track_solution, pivot_index, neighbor_index, neighbor_function;
   int **neighborhood;
   int mem_solution;
   
   // Dimensão da solução
-  size_track_solution = 0;
+  size_original_track_solution = 0;
   for (counter = 0; counter < num_pieces_cut; ++counter)
-    if (track_solution[counter] != -1) size_track_solution++; 
+    if (track_solution[counter] != -1) size_original_track_solution++; 
   
   // Alocando vizinhança da solução  
-  neighborhood = malloc((size_track_solution - 1) * sizeof(int*));
-  for (counter = 0; counter < size_track_solution - 1; ++counter)
-    neighborhood[counter] = malloc(size_track_solution * sizeof(int));
+  neighborhood = malloc((size_original_track_solution - 1) * sizeof(int*));
+  for (counter = 0; counter < size_original_track_solution - 1; ++counter)
+    // Alterado 10/04/15
+    //neighborhood[counter] = malloc(size_track_solution * sizeof(int));
+      neighborhood[counter] = malloc(num_pieces_cut * sizeof(int));
   
-  // Selecionando pivô para gerar vizinhança de solução
-  pivot_index = rand() % size_track_solution;
+  // Selecionando pivot aleatorio para gerar um vizinho da solucao
+  pivot_index = rand() % size_original_track_solution;
   
   // Gerando vizinhança e verificando melhor solução local
-  for (num_solution = 0; num_solution < size_track_solution - 1; ++num_solution) {
+  for (num_solution = 0; num_solution < size_original_track_solution - 1; ++num_solution) {
     
-    for (index_item_solution = 0; index_item_solution < size_track_solution; ++index_item_solution) {
+    for (index_item_solution = 0; index_item_solution < size_original_track_solution; ++index_item_solution) {
 	neighborhood[num_solution][index_item_solution] = track_solution[index_item_solution];
     }
+    
+    size_track_solution = size_original_track_solution;
     
     // Executando permuta com o pivot_index
     neighbor_index = num_solution < pivot_index ? num_solution : num_solution + 1;
@@ -246,7 +248,10 @@ unsigned int run_adaptive_search(rectangle stock, rectangle *pieces_cut, int num
     neighborhood[num_solution][neighbor_index] = track_solution[pivot_index];
     neighborhood[num_solution][pivot_index] = mem_solution;
     
-    neighbor_function = evaluate_solution(stock, pieces_cut, num_pieces_cut, neighborhood[num_solution], size_track_solution);
+    // ***********************************
+    // TODO: antes de avaliar a solucao, tentar alocar mais pecas apos a permutacao
+     
+    neighbor_function = evaluate_solution(stock, pieces_cut, num_pieces_cut, neighborhood[num_solution], &size_track_solution, 1);
     
     if (neighbor_function > local_function) {
       
@@ -261,16 +266,16 @@ unsigned int run_adaptive_search(rectangle stock, rectangle *pieces_cut, int num
   }
   
   // Destruindo vizinhança da solução
-  for (counter = 0; counter < size_track_solution - 1; ++counter) free(neighborhood[counter]);
+  for (counter = 0; counter < size_original_track_solution - 1; ++counter) free(neighborhood[counter]);
   free(neighborhood);
   
   return local_function;
 }
 
 
-unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *solution, unsigned int size_solution) {
+unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_pieces_cut, int *solution, unsigned int *size_solution, unsigned int tryaddpiece) {
   
-  register unsigned int c_index_sol;
+  register unsigned int c_index_sol, index_piece;
   cut_rectangle *set_cut_rectangles;
   unsigned int objective_function;
   
@@ -285,7 +290,7 @@ unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_p
   
   objective_function = 0;
   
-  for (c_index_sol = 0; c_index_sol < size_solution; ++c_index_sol) {
+  for (c_index_sol = 0; c_index_sol < *size_solution; ++c_index_sol) {
     
     if (solution[c_index_sol] < 0) continue;
     
@@ -295,6 +300,23 @@ unsigned int evaluate_solution(rectangle stock, rectangle *pieces_cut, int num_p
     
     if (cut_lower_piece_stock(&stock, &pieces_cut[solution[c_index_sol]], set_cut_rectangles)) {
       objective_function += pieces_cut[solution[c_index_sol]].value;
+    }
+  }
+  
+  // Adicionado 10/04/15
+  if (tryaddpiece) {
+    
+      for (index_piece = 0; index_piece < num_pieces_cut; ++index_piece) {
+	
+      if (pieces_cut[index_piece].is_cutted) continue;
+      
+      build_set_cut_rectangles(stock, set_cut_rectangles);
+      
+      if (cut_lower_piece_stock(&stock, &pieces_cut[index_piece], set_cut_rectangles)) {
+	solution[c_index_sol++] = pieces_cut[index_piece].type;
+	objective_function += pieces_cut[index_piece].value;
+	(*size_solution)++;
+      }
     }
   }
   
