@@ -151,7 +151,9 @@ void reset_status_rectangles(rectangle* rec, unsigned int size) {
 }
 
 
-
+/*
+ * @Deprecated
+ */
 int cut_piece_stock(rectangle* stock, rectangle piece) {
   
   register int c_stock_width, c_stock_length, c_stock_local_width, c_stock_local_length;

@@ -52,4 +52,7 @@ int is_inner_cut_retangle(const cut_rectangle cut_rec, const rectangle rec);
 
 int cut_lower_piece_stock(rectangle* stock, rectangle* piece, cut_rectangle *cut_list);
 
+/*
+ * @Deprecated
+ */
 int cut_piece_stock(rectangle* stock, rectangle piece);
