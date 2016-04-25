@@ -30,7 +30,7 @@ Name=non-guillotine-cutting
 Type=Native Application
 
 [Launch][Launch Configuration 0][Data]
-Arguments=-f ../../amaral/NGC_f3.TXT -mh
+Arguments=-f ../amaral/NGC_e2.TXT -mh
 Dependencies=@Variant(\x00\x00\x00\t\x00\x00\x00\x00\x01\x00\x00\x00\x0b\x00\x00\x00\x00\x02\x00\x00\x00,\x00n\x00o\x00n\x00-\x00g\x00u\x00i\x00l\x00l\x00o\x00t\x00i\x00n\x00e\x00-\x00c\x00u\x00t\x00t\x00i\x00n\x00g\x00\x00\x00,\x00n\x00o\x00n\x00-\x00g\x00u\x00i\x00l\x00l\x00o\x00t\x00i\x00n\x00e\x00-\x00c\x00u\x00t\x00t\x00i\x00n\x00g)
 Dependency Action=Build
 EnvironmentGroup=
@@ -43,3 +43,6 @@ isExecutable=false
 
 [Project]
 VersionControlSupport=kdevsubversion
+
+[SourceFileTemplates]
+LastUsedTemplate=/home/thiago/.kde/share/apps/kdevfiletemplates/template_descriptions/c_gobject_properties.desktop
