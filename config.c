@@ -27,6 +27,12 @@ void load_line_argument(int argc, char **argv, line_argument* argument) {
   }
 }
 
+double get_time ()
+{
+	struct timeval tv; gettimeofday(&tv, 0);
+	return (double)(tv.tv_sec * 100.0 + tv.tv_usec / 10000.0);
+}
+
 void print_help() {
     printf("Informe os seguintes parâmetros para a execução do programa:\n");
     printf("-f <nome do arquivo de entrada situado no diretório ./in>\n");

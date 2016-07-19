@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <time.h>
 #include <sys/time.h>
 #include <sys/resource.h>
 
@@ -19,6 +20,6 @@ typedef struct {
 } line_argument;
 
 
+double get_time ();
 void load_line_argument(int argc, char **argv, line_argument* argument);
-
 void print_help();
