@@ -10,6 +10,12 @@ int main(int argc, char **argv) {
     
     load_line_argument(argc, argv, &argument);
     
+    if (!strcmp(argument.opt_heuristic, ARG_RUN_TEST)) 
+    {
+	    run_all_metaheuristic_tests();
+	    exit(0);
+    }
+    
     char* path_file = malloc(strlen(DIR_TEST) + strlen(argument.file_name));
     strcat(path_file, DIR_TEST);
     strcat(path_file, argument.file_name);
