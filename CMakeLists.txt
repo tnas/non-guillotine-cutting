@@ -4,7 +4,7 @@ add_executable(non-guillotine-cutting main.c config.c heuristics/rec.c heuristic
 
 install(TARGETS non-guillotine-cutting RUNTIME DESTINATION bin)
 
-list(APPEND CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fopenmp")
+list(APPEND CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -fopenmp -o3")
 
 set(CMAKE_C_COMPILER "/usr/bin/gcc")
 
