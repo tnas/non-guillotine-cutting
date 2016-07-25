@@ -48,73 +48,46 @@ void print_help() {
 
 long int normalize_int_results(const long int* results)
 {
-	int exec_min_val, exec_max_val, exec;
-	long int sum_val, max_val, min_val;
+	int exec;
+	long int sum_val;
 	
-	max_val = sum_val = 0;
-	min_val = INT_MAX;
+	sum_val = 0;
 	
 	if (TEST_EXEC_TIMES == 1) return results[0];
 	
-	// Finding out max/min value
-	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
-	{
-		if (results[exec] > max_val)
-		{
-			exec_max_val = exec;
-			max_val = results[exec];
-		}
-		else if (results[exec] < min_val)
-		{
-			exec_min_val = exec;
-			min_val = results[exec];
-		}
-	}
-	
 	// Discarding max and min results value
 	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
-	{
-		if (exec != exec_min_val && exec != exec_max_val)
-			sum_val += results[exec];
-	}
+		sum_val += results[exec];
 	
-	return sum_val / (TEST_EXEC_TIMES - 2);
+	return sum_val / (TEST_EXEC_TIMES - 1);
 }
 
 
-double normalize_double_results(const double* results)
+result normalize_results(const double* values, result norm_values)
 {
-	int exec_min_val, exec_max_val, exec;
-	double sum_val, max_val, min_val;
-	
-	max_val = sum_val = 0;
-	min_val = INT_MAX;
-	
-	if (TEST_EXEC_TIMES == 1) return results[0];
-	
-	// Finding out max/min value
-	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
+	int exec;
+	double sum_val, sum_pow_val;
+
+	if (TEST_EXEC_TIMES == 1)
 	{
-		if (results[exec] > max_val)
-		{
-			exec_max_val = exec;
-			max_val = results[exec];
-		}
-		else if (results[exec] < min_val)
-		{
-			exec_min_val = exec;
-			min_val = results[exec];
-		}
+		norm_values.average_value = values[0];
+		norm_values.standard_deviation = 0;
+		return norm_values;
 	}
 	
-	// Discarding max and min results value
-	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
-	{
-		if (exec != exec_min_val && exec != exec_max_val)
-			sum_val += results[exec];
-	}
+	sum_val = sum_pow_val = 0;
 	
-	return sum_val / (TEST_EXEC_TIMES - 2);
+	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
+		sum_val += values[exec];
+	
+	norm_values.average_value = sum_val / TEST_EXEC_TIMES;
+	
+	for (exec = 0; exec < TEST_EXEC_TIMES; ++exec)
+		sum_pow_val += pow(values[exec] - norm_values.average_value, 2);
+	
+	norm_values.standard_deviation = sqrt(sum_pow_val / (TEST_EXEC_TIMES - 1));
+	
+	return norm_values;
 }
 
 
@@ -123,11 +96,12 @@ void run_all_metaheuristic_tests()
 	int count_instancia, exec, num_instancias, solucao_computada;
 	FILE* out_file;
 	FILE *file_descriptor;
-	double time_initial, time_final, tempo_computado;
+	double time_initial, time_final;
 	double tempo_exec[TEST_EXEC_TIMES];
 	long int solucoes[TEST_EXEC_TIMES];
 	rectangle stock;
 	unsigned num_pieces_cut;
+	result norm_values;
 	
 	/* *******************************
 	 * Definition of tests parameters
@@ -146,15 +120,11 @@ void run_all_metaheuristic_tests()
 		"../in/beasley_10.txt",
 		"../in/beasley_11.txt",
 		"../in/beasley_12.txt",
-		"../in/christofides.txt",
-		"../in/fekete_1.txt",
-		"../in/fekete_2.txt",
-		"../in/fekete_3.txt",
-		"../in/fekete_4.txt",
-		"../in/fekete_5.txt",
 		"../in/hadjiconstantinou_1.txt",
 		"../in/hadjiconstantinou_2.txt",
 		"../in/wang.txt",
+		"../in/christofides.txt",
+		
 		"../amaral/NGC_a1.TXT",
 		"../amaral/NGC_a2.TXT",
 		"../amaral/NGC_a3.TXT",
@@ -179,7 +149,18 @@ void run_all_metaheuristic_tests()
 		"../amaral/NGC_e2.TXT",
 		"../amaral/NGC_e3.TXT",
 		"../amaral/NGC_e4.TXT",
-		"../amaral/NGC_e5.TXT"
+		"../amaral/NGC_e5.TXT",
+		"../amaral/NGC_f1.TXT",
+		"../amaral/NGC_f2.TXT",
+		"../amaral/NGC_f3.TXT",
+		"../amaral/NGC_f4.TXT",
+		"../amaral/NGC_f5.TXT",
+		
+		"../in/fekete_1.txt",
+		"../in/fekete_2.txt",
+		"../in/fekete_3.txt",
+		"../in/fekete_4.txt",
+		"../in/fekete_5.txt",
 	};
 	/* *****************
 	 * Tests execution
@@ -231,14 +212,16 @@ void run_all_metaheuristic_tests()
 				destroy_rectangle(&pieces_cut[count_piece++]));
 		}
 		
-		tempo_computado   = normalize_double_results(tempo_exec);
+		norm_values = normalize_results(tempo_exec, norm_values);
 		solucao_computada = normalize_int_results(solucoes);
-		fprintf(out_file, "Time Execution: %.5f\n", tempo_computado);
-		fprintf(out_file, "Solucao: %d\n", solucao_computada);
+		fprintf(out_file, "Average Time Execution: %.5f\n", norm_values.average_value);
+		fprintf(out_file, "Standard Deviation: %.5f\n", norm_values.standard_deviation);
+		fprintf(out_file, "Optimal Solution: %d\n", solucao_computada);
 		fflush(out_file);
 		
-		printf(">>Time Execution: %.5f\n", tempo_computado); 
-		printf(">>Solucao: %d\n", solucao_computada);
+		printf(">>Average Time Execution: %.5f\n", norm_values.average_value); 
+		printf(">>Standard Deviation: %.5f\n", norm_values.standard_deviation);
+		printf(">>Optimal Solution: %d\n", solucao_computada);
 		fflush(stdout);
 		
 				

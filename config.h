@@ -6,6 +6,7 @@
 #include <sys/time.h>
 #include <sys/resource.h>
 #include <limits.h>
+#include <math.h>
 
 #include "heuristics/heuristic.h"
 #define TEST_EXEC_TIMES 5
@@ -22,6 +23,11 @@ typedef struct {
   char *opt_heuristic;
 } line_argument;
 
+typedef struct 
+{
+	double average_value;
+	double standard_deviation;
+} result;
 
 double get_time ();
 void load_line_argument(int argc, char **argv, line_argument* argument);
